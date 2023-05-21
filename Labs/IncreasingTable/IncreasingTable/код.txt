@@ -1,0 +1,65 @@
+#include <iostream>
+#include <fstream>
+
+void searchNumber(long long number, std::ofstream& output)
+{
+	long long row = number - 1, column = 2;
+	while (true)
+	{
+		if ((number % row == 0) && (number / row < 67108864))
+			while (true)
+			{
+				long long temp = row * column;
+				if (temp > number)
+					break;
+				if (temp == number)
+				{
+					output << row << ' ' << column << '\n';
+					return;
+				}
+				else
+					column *= 2;
+			}
+		else
+			row -= 2;
+	}
+}
+
+int main()
+{
+	std::ifstream input("bigInput.txt");
+	std::ofstream output("output.txt");
+
+	if (!input)
+	{
+		std::cout << "File is not exist\n";
+		return 1;
+	}
+
+	long long number, counter;
+	input >> counter;
+
+	if (counter < 1 || counter > 100000)
+	{
+		std::cout << "Invalid input\n";
+		return 1;
+	}
+
+	for (int i = 0; i < counter; i++)
+	{
+		input >> number;
+
+		if (number < 1 || number > 1000000000)
+		{
+			std::cout << "Invalid input\n";
+			return 1;
+		}
+
+		if (number % 2 != 0)
+			output << number << " 1\n";
+		else
+			searchNumber(number, output);
+	}
+
+	return 0;
+}
