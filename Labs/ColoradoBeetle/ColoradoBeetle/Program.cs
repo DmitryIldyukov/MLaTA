@@ -34,7 +34,7 @@ namespace ColoradoBeetle
     {
         static void Main(string[] args)
         {
-            string inPath = "input.txt";
+            string inPath = "input4.txt";
             string outPath = "output.txt";
             string[] input = File.ReadAllLines(inPath);
             string[] numbersStr = input[0].Split(" ");
@@ -69,42 +69,50 @@ namespace ColoradoBeetle
                 File.WriteAllText(outPath, "0");
                 return;
             }
+
+            Console.WriteLine(ways.Max().ToString());
+
             File.WriteAllText(outPath, ways.Max().ToString());
         }
 
         static void DFS(ref Stack<Tuple<int, int>> toVisited, ref Stack<Tuple<int, int>> visited, char[][] field, ref List<int> ways, int M, int N)
         {
-            int counter = 1;
-            int temp = 0;
-            do
+            Stack<int> crossroads = new Stack<int>();
+            while (true)
             {
                 int counterWays = GetPossibleWays(ref toVisited, ref visited, field, visited.Peek(), M, N);
                 if (counterWays == 1)
                 {
-                    counter++;
                     visited.Push(toVisited.Pop());
                 }
                 else if (counterWays > 1)
                 {
+                    crossroads.Push(visited.Count);
                     visited.Push(toVisited.Pop());
-                    counter++;
-                    temp = visited.Count;
                 }
-                else
+                else if (counterWays == 0)
                 {
-                    ways.Add(counter);
-                    counter = temp;
+                    ways.Add(visited.Count);
+
+                    if (crossroads.Count > 0)
+                    {
+                        int crossroad = crossroads.Pop();
+                        for (int i = visited.Count; i > crossroad; i--)
+                            visited.Pop();
+                    }
+
                     if (toVisited.Count == 0) break;
+
                     visited.Push(toVisited.Pop());
                 }
-            } while (true);
+            }
         }
 
         static int GetPossibleWays(ref Stack<Tuple<int, int>> toVisited, ref Stack<Tuple<int, int>> visited, char[][] field, Tuple<int, int> curPoint, int M, int N)
         {
             int counterWays = 0;
 
-            if (curPoint.Item1 != M - 1 && field[curPoint.Item1 + 1][curPoint.Item2] == '#')
+            if (curPoint.Item1 != M - 1 && field[curPoint.Item1 + 1][curPoint.Item2] == '#') // Вниз
             {
                 Tuple<int, int> t = new Tuple<int, int>(curPoint.Item1 + 1, curPoint.Item2);
 
@@ -115,7 +123,7 @@ namespace ColoradoBeetle
                 }
             }
 
-            if (curPoint.Item1 != 0 && field[curPoint.Item1 - 1][curPoint.Item2] == '#')
+            if (curPoint.Item1 != 0 && field[curPoint.Item1 - 1][curPoint.Item2] == '#')  // вверх
             {
                 Tuple<int, int> t = new Tuple<int, int>(curPoint.Item1 - 1, curPoint.Item2);
 
@@ -126,7 +134,7 @@ namespace ColoradoBeetle
                 }
             }
                 
-            if (curPoint.Item2 != N - 1 && field[curPoint.Item1][curPoint.Item2 + 1] == '#')
+            if (curPoint.Item2 != N - 1 && field[curPoint.Item1][curPoint.Item2 + 1] == '#') // вправо
             {
                 Tuple<int, int> t = new Tuple<int, int>(curPoint.Item1, curPoint.Item2 + 1);
 
@@ -137,7 +145,7 @@ namespace ColoradoBeetle
                 }
             }
                 
-            if (curPoint.Item2 != 0 && field[curPoint.Item1][curPoint.Item2 - 1] == '#')
+            if (curPoint.Item2 != 0 && field[curPoint.Item1][curPoint.Item2 - 1] == '#') // влево
             {
                 Tuple<int, int> t = new Tuple<int, int>(curPoint.Item1, curPoint.Item2 - 1);
 
