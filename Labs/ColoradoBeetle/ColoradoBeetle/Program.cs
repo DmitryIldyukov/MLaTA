@@ -34,7 +34,7 @@ namespace ColoradoBeetle
     {
         static void Main(string[] args)
         {
-            string inPath = "input4.txt";
+            string inPath = "input.txt";
             string outPath = "output.txt";
             string[] input = File.ReadAllLines(inPath);
             string[] numbersStr = input[0].Split(" ");
@@ -59,19 +59,22 @@ namespace ColoradoBeetle
                         toVisited.Push(new Tuple<int, int>(i, j));
                         visited.Push(toVisited.Pop());
                         DFS(ref toVisited, ref visited, field, ref ways, M, N);
+                        if (ways[ways.Count - 1] == M * N)
+                        {
+                            File.WriteAllText(outPath, ways.Max().ToString());
+                            return;
+                        }
                         visited.Clear();
                         toVisited.Clear();
                     }
                 }
             }
+
             if (ways.Count == 0)
             {
                 File.WriteAllText(outPath, "0");
                 return;
             }
-
-            Console.WriteLine(ways.Max().ToString());
-
             File.WriteAllText(outPath, ways.Max().ToString());
         }
 
@@ -87,12 +90,20 @@ namespace ColoradoBeetle
                 }
                 else if (counterWays > 1)
                 {
-                    crossroads.Push(visited.Count);
+                    for (int i = 0; i < counterWays - 1; i++)
+                    {
+                        crossroads.Push(visited.Count);
+                    }
                     visited.Push(toVisited.Pop());
                 }
                 else if (counterWays == 0)
                 {
                     ways.Add(visited.Count);
+
+                    if (visited.Count == M*N)
+                    {
+                        break;
+                    }
 
                     if (crossroads.Count > 0)
                     {
@@ -101,7 +112,8 @@ namespace ColoradoBeetle
                             visited.Pop();
                     }
 
-                    if (toVisited.Count == 0) break;
+                    if (toVisited.Count == 0)
+                        break;
 
                     visited.Push(toVisited.Pop());
                 }
@@ -112,7 +124,7 @@ namespace ColoradoBeetle
         {
             int counterWays = 0;
 
-            if (curPoint.Item1 != M - 1 && field[curPoint.Item1 + 1][curPoint.Item2] == '#') // Вниз
+            if (curPoint.Item1 != M - 1 && field[curPoint.Item1 + 1][curPoint.Item2] == '#')
             {
                 Tuple<int, int> t = new Tuple<int, int>(curPoint.Item1 + 1, curPoint.Item2);
 
@@ -123,7 +135,7 @@ namespace ColoradoBeetle
                 }
             }
 
-            if (curPoint.Item1 != 0 && field[curPoint.Item1 - 1][curPoint.Item2] == '#')  // вверх
+            if (curPoint.Item1 != 0 && field[curPoint.Item1 - 1][curPoint.Item2] == '#')
             {
                 Tuple<int, int> t = new Tuple<int, int>(curPoint.Item1 - 1, curPoint.Item2);
 
@@ -134,7 +146,7 @@ namespace ColoradoBeetle
                 }
             }
                 
-            if (curPoint.Item2 != N - 1 && field[curPoint.Item1][curPoint.Item2 + 1] == '#') // вправо
+            if (curPoint.Item2 != N - 1 && field[curPoint.Item1][curPoint.Item2 + 1] == '#')
             {
                 Tuple<int, int> t = new Tuple<int, int>(curPoint.Item1, curPoint.Item2 + 1);
 
@@ -145,7 +157,7 @@ namespace ColoradoBeetle
                 }
             }
                 
-            if (curPoint.Item2 != 0 && field[curPoint.Item1][curPoint.Item2 - 1] == '#') // влево
+            if (curPoint.Item2 != 0 && field[curPoint.Item1][curPoint.Item2 - 1] == '#')
             {
                 Tuple<int, int> t = new Tuple<int, int>(curPoint.Item1, curPoint.Item2 - 1);
 
